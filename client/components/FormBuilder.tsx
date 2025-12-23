@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { User, Form , Question } from '../types/form';
+import { User, Form, Question } from '../types/form';
 
 interface FormBuilderProps {
   user: User;
@@ -68,7 +68,6 @@ export function FormBuilder({ user, existingForm, onSave, onCancel }: FormBuilde
       title,
       description,
       createdBy: user.id,
-      createdAt: existingForm?.createdAt || new Date().toISOString().split('T')[0],
       questions,
       published: existingForm?.published || false,
     };
@@ -137,14 +136,14 @@ export function FormBuilder({ user, existingForm, onSave, onCancel }: FormBuilde
                     className="w-full text-gray-900 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none mb-3"
                     placeholder="Question"
                   />
-                  
+
                   <div className="flex items-center gap-4">
                     <select
                       value={question.type}
-                      onChange={(e) => updateQuestion(question.id, { 
+                      onChange={(e) => updateQuestion(question.id, {
                         type: e.target.value as Question['type'],
-                        options: ['multiple-choice', 'checkbox', 'dropdown'].includes(e.target.value) 
-                          ? ['Option 1'] 
+                        options: ['multiple-choice', 'checkbox', 'dropdown'].includes(e.target.value)
+                          ? ['Option 1']
                           : undefined
                       })}
                       className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
@@ -155,7 +154,7 @@ export function FormBuilder({ user, existingForm, onSave, onCancel }: FormBuilde
                       <option value="checkbox">Checkboxes</option>
                       <option value="dropdown">Dropdown</option>
                     </select>
-                    
+
                     <label className="flex items-center gap-2">
                       <input
                         type="checkbox"
@@ -198,7 +197,7 @@ export function FormBuilder({ user, existingForm, onSave, onCancel }: FormBuilde
                     </div>
                   )}
                 </div>
-                
+
                 <button
                   onClick={() => deleteQuestion(question.id)}
                   className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors"

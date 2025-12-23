@@ -8,9 +8,8 @@ const responseSchema = new mongoose.Schema(
             required: true
         },
         submittedBy: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-            default: null
+            type: String,
+            required: true
         },
         answers: {
             type: Map,

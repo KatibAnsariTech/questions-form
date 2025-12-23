@@ -1,9 +1,10 @@
-import { User, Form, Response } from "../types/form";
+import { useState, useEffect } from 'react';
+import { User, Form } from "../types/form";
+import { getResponsesByForm } from '@/lib/api';
 
 interface DashboardProps {
   user: User;
   forms: Form[];
-  responses: Response[];
   onLogout: () => void;
   onCreateForm: () => void;
   onEditForm: (formId: string) => void;
@@ -16,7 +17,6 @@ interface DashboardProps {
 export function Dashboard({
   user,
   forms,
-  responses,
   onLogout,
   onCreateForm,
   onEditForm,
@@ -25,8 +25,31 @@ export function Dashboard({
   onViewResponses,
   onTogglePublish,
 }: DashboardProps) {
+  const [responseCounts, setResponseCounts] = useState<Record<string, number>>({});
+
+  // Fetch response counts for all forms
+  useEffect(() => {
+    const fetchCounts = async () => {
+      const counts: Record<string, number> = {};
+      for (const form of forms) {
+        try {
+          const responses = await getResponsesByForm(form.id);
+          counts[form.id] = responses.length;
+        } catch (error) {
+          console.error(`Error fetching responses for form ${form.id}:`, error);
+          counts[form.id] = 0;
+        }
+      }
+      setResponseCounts(counts);
+    };
+
+    if (forms.length > 0) {
+      fetchCounts();
+    }
+  }, [forms]);
+
   const getResponseCount = (formId: string) => {
-    return responses.filter((r) => r.formId === formId).length;
+    return responseCounts[formId] || 0;
   };
 
   const copyFormLink = (formId: string) => {
@@ -56,7 +79,7 @@ export function Dashboard({
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
-            > 
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -137,9 +160,8 @@ export function Dashboard({
                     <p className="text-gray-600">{form.description}</p>
                   </div>
                   <span
-                    className={`px-2 py-1 rounded text-white ${
-                      form.published ? "bg-green-500" : "bg-gray-400"
-                    }`}
+                    className={`px-2 py-1 rounded text-white ${form.published ? "bg-green-500" : "bg-gray-400"
+                      }`}
                   >
                     {form.published ? "Published" : "Draft"}
                   </span>

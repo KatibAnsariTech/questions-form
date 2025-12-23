@@ -11,16 +11,18 @@ export interface Form {
   title: string;
   description: string;
   createdBy: string;
-  createdAt: string;
   questions: Question[];
   published: boolean;
 }
 
+
 export interface Response {
   id: string;
   formId: string;
+  submittedBy: string;
   submittedAt: string;
   answers: Record<string, any>;
+  createdAt?: string;
 }
 
 export interface User {

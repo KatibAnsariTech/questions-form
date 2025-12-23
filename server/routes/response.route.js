@@ -1,8 +1,12 @@
 import express from 'express';
-import { submitResponse } from '../controllers/response.controller.js';
+import { submitResponse, getResponsesByForm } from '../controllers/response.controller.js';
 
 const resRoute = express.Router();
 
-resRoute.post('/response' , submitResponse);
+// Public route - anyone can submit a response
+resRoute.post('/response', submitResponse);
+
+// Protected route - only form owner can view responses
+resRoute.get('/form/:formId', getResponsesByForm);
 
 export default resRoute;

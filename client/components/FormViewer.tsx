@@ -8,6 +8,7 @@ interface FormViewerProps {
 }
 
 export function FormViewer({ form, onSubmit, onBack }: FormViewerProps) {
+  const [email, setEmail] = useState('');
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -29,6 +30,15 @@ export function FormViewer({ form, onSubmit, onBack }: FormViewerProps) {
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
+
+    // Validate email
+    if (!email) {
+      newErrors['email'] = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors['email'] = 'Please enter a valid email address';
+    }
+
+    // Validate questions
     form.questions.forEach(question => {
       if (question.required && !answers[question.id]) {
         newErrors[question.id] = 'This question is required';
@@ -40,7 +50,7 @@ export function FormViewer({ form, onSubmit, onBack }: FormViewerProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validate()) {
       return;
     }
@@ -48,10 +58,11 @@ export function FormViewer({ form, onSubmit, onBack }: FormViewerProps) {
     const response: Response = {
       id: Date.now().toString(),
       formId: form.id,
+      submittedBy: email,
       submittedAt: new Date().toISOString(),
       answers,
     };
-    
+
     onSubmit(response);
     setSubmitted(true);
   };
@@ -71,7 +82,7 @@ export function FormViewer({ form, onSubmit, onBack }: FormViewerProps) {
             onClick={onBack}
             className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
           >
-            Back to Dashboard
+            Done
           </button>
         </div>
       </div>
@@ -103,6 +114,29 @@ export function FormViewer({ form, onSubmit, onBack }: FormViewerProps) {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Email Input */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <label className="block text-gray-900 mb-3">
+              Email Address
+              <span className="text-red-500 ml-1">*</span>
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (errors['email']) {
+                  setErrors({ ...errors, email: '' });
+                }
+              }}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
+              placeholder="your.email@example.com"
+            />
+            {errors['email'] && (
+              <p className="text-red-600 mt-2">{errors['email']}</p>
+            )}
+          </div>
+
           {form.questions.map((question) => (
             <div key={question.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <label className="block text-gray-900 mb-3">
